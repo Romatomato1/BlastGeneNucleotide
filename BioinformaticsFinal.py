@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 from Bio.Blast import NCBIWWW, NCBIXML
+from tabulate import tabulate
+
 
 def read_file_contents(file_path):
     """
