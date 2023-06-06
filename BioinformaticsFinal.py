@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 from Bio.Blast import NCBIWWW, NCBIXML
-from tabulate import tabulate
 
 def read_file_contents(file_path):
     """
@@ -21,6 +20,31 @@ fasta_file2 = r"C:\Users\roman\PycharmProjects\pythonProject3\NBPF11.fasta"
 # Read the contents of the FASTA files
 gene1_seq = read_file_contents(fasta_file1)
 gene2_seq = read_file_contents(fasta_file2)
+
+# Calculate the differences in nucleotides between the sequences
+differences = sum(a != b for a, b in zip(gene1_seq, gene2_seq))
+
+# Display the number of differences
+print("Number of differences without BLAST:", differences)
+
+# Create a bar plot to visualize the differences in nucleotides without BLAST
+nucleotides = ['A', 'T', 'C', 'G']
+gene1_counts = [gene1_seq.count(nucleotide) for nucleotide in nucleotides]
+gene2_counts = [gene2_seq.count(nucleotide) for nucleotide in nucleotides]
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+sns.barplot(x=nucleotides, y=gene1_counts, ax=ax1)
+ax1.set_xlabel("Nucleotides")
+ax1.set_ylabel("Count")
+ax1.set_title("NBPF10 Nucleotide Counts (without BLAST)")
+
+sns.barplot(x=nucleotides, y=gene2_counts, ax=ax2)
+ax2.set_xlabel("Nucleotides")
+ax2.set_ylabel("Count")
+ax2.set_title("NBPF11 Nucleotide Counts (without BLAST)")
+
+plt.tight_layout()
+plt.show()
 
 # Perform BLAST comparison for gene 1
 result_handle_gene1 = NCBIWWW.qblast("blastn", "nt", gene1_seq)
@@ -59,20 +83,30 @@ for alignment_gene2 in alignments_gene2:
     alignment_info.append(alignment_gene2.hsps[0].expect)
     table_data.append(alignment_info)
 
-# Display the alignment results in a table
-headers = ["Sequence ID", "Length", "E-value"]
+# Print the table of alignment results
+headers = ["Title", "Length", "Expect"]
 print(tabulate(table_data, headers=headers))
 
-# Plot a bar graph of the E-values
-x = range(len(table_data))
-evalues = [alignment[2] for alignment in table_data]
+# Calculate the differences in nucleotides between the sequences
+differences = sum(a != b for a, b in zip(gene1_seq, gene2_seq))
 
-fig, ax = plt.subplots(figsize=(12, 6))
-sns.barplot(x=x, y=evalues)
-ax.set_xlabel("Alignment")
-ax.set_ylabel("E-value")
-ax.set_title("Alignment E-values")
-ax.set_xticks(x)
-ax.set_xticklabels([alignment[0] for alignment in table_data], rotation=45, ha='right', fontsize=8)
+# Display the number of differences
+print("Number of differences with BLAST:", differences)
+
+# Create a bar plot to visualize the differences in nucleotides with BLAST
+gene1_counts = [gene1_seq.count(nucleotide) for nucleotide in nucleotides]
+gene2_counts = [gene2_seq.count(nucleotide) for nucleotide in nucleotides]
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+sns.barplot(x=nucleotides, y=gene1_counts, ax=ax1)
+ax1.set_xlabel("Nucleotides")
+ax1.set_ylabel("Count")
+ax1.set_title("NBPF10 Nucleotide Counts (with BLAST)")
+
+sns.barplot(x=nucleotides, y=gene2_counts, ax=ax2)
+ax2.set_xlabel("Nucleotides")
+ax2.set_ylabel("Count")
+ax2.set_title("NBPF11 Nucleotide Counts (with BLAST)")
+
 plt.tight_layout()
 plt.show()
